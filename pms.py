@@ -263,6 +263,7 @@ def comp_depth(mask, normal):
 
 
   ## 6. create output matrix
+  depth = x.reshape(mask.shape)
   depth -= np.min(depth)
   depth[mask == 0] = 0.0
 
