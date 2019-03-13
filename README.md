@@ -3,7 +3,7 @@ Implementation of simple photometric stereo like below picture.
 
 <p align="center">
   <img src="./figure/figure1.png" width=90%>
-<\p>
+</p>
 
 ## Environment
 Ubuntu 18.04  
