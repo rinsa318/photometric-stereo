@@ -55,3 +55,8 @@ Options:
 windowsize: see mask2tiny function
 
 ```
+
+## References
+
+[1] [Woodham, Robert J](https://www.cs.ubc.ca/~woodham/). "Photometric method for determining surface orientation from multiple images." Optical engineering 19.1 (1980): 191139.
+[[Paper](https://www.cs.ubc.ca/~woodham/papers/Woodham80c.pdf "Paper")]  
