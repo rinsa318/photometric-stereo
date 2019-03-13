@@ -23,7 +23,7 @@ Python3.6(Anaconda3-5.2.0)
 
 
 
-## How to run
+## Usage
 
 
 ### Dataset
@@ -36,7 +36,7 @@ Note that the images used in the example program are taken from the following pr
 
 
 
-### Usage
+### How to run
 
 ```
 python main.py argvs[1] argvs[2] argvs[3]
