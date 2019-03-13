@@ -4,14 +4,14 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-26 17:58:39
-  @Last Modified by:   Tsukasa Nozawa
-  @Last Modified time: 2019-02-28 05:14:12
+  @Last Modified by:   rinsa318
+  @Last Modified time: 2019-03-13 20:27:47
  ----------------------------------------------------
 
   Usage:
    python main.py argvs[1] argvs[2] argvs[3]...
   
-   argvs[1]  :  image folder paht   -->   {abc}/{abc}.{number}.png, {abc}/{abc}.mask.png
+   argvs[1]  :  image folder path   -->   {abc}/{abc}.{number}.png, {abc}/{abc}.mask.png
    argvs[2]  :  chrome folder path   -->  argvs[1] and argvs[2] have to taken same lighting condition
    argvs[3]  :  number of image
  
@@ -24,12 +24,11 @@
 
 
 import numpy as np
-import scipy.sparse as sp
-import scipy.sparse.linalg
-import matplotlib.pyplot as plt
 import cv2
 import sys
 import os
+
+### my functions
 import pms as ps
 import obj_functions as ob
 
@@ -153,14 +152,15 @@ def main():
   depth_image = np.array((1.0 - (depth / np.max(depth))) * 255, dtype=np.uint8 )
   depth_image_rgb = cv2.cvtColor(depth_image, cv2.COLOR_GRAY2RGB)
 
-  results = np.hstack((np.hstack((normal_image, albedo_image)), depth_image_rgb))
+
+  ### save result as image
+  results = np.hstack((np.hstack((albedo_image, normal_image)), depth_image_rgb))
   cv2.imwrite("{0}/{1}_results_merage.png".format(outpath, SUBJECT_list[0]), np.array(results, dtype=np.uint8))
   cv2.imshow("results", np.array(results, dtype=np.uint8))
   cv2.waitKey(0)
-  # plt.imshow(np.flip(results, 2))
-  # plt.show()
 
 
+  ### save result as 3d file
   vertex, triangle = ob.Depth2VerTri(depth, small_mask)
   ob.save_as_ply("{0}/{1}_recovered.ply".format(outpath, SUBJECT_list[0]), depth, normal, albedo, small_mask, triangle)
   ob.writeobj("{0}/{1}_recovered.obj".format(outpath, SUBJECT_list[0]), vertex, triangle)
