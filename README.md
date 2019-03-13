@@ -2,7 +2,7 @@
 Implementation of simple photometric stereo like below picture.
 
 
-<img src="./figure/figure1.png" width=100%>
+<img src="./figure/figure1.png" width=90%>
 
 ## Environment
 Ubuntu 18.04  
@@ -38,7 +38,7 @@ Note that the images used in the example program are taken from the following pr
 ### Usage
 
 ```
-python main.py argvs[1] argvs[2] argvs[3]...
+python main.py argvs[1] argvs[2] argvs[3]
 
 
 
