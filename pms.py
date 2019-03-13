@@ -68,11 +68,11 @@ def comp_light(img, mask):
 
 
   ## 4. Compute the surface normal at the point
-  cz = 0.0
-  hz = np.sqrt(cr**2 - ((H[0]-C[0])**2 + (H[1]-C[1])**2))
-  N = np.array([hx - cx, hy - cy, hz - cz], dtype=np.float32)
+  Nx = (hx - cx) / cr
+  Ny = (hy - cy) / cr
+  Nz = np.sqrt(1 - Nx**2 - Ny**2)
+  N = np.array((Nx, Ny, Nz), dtype=np.float32)
   n = N / np.linalg.norm(N)
-
 
   
   ## 5. Compute light source direction from normal
