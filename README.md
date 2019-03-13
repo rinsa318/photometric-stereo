@@ -1,9 +1,9 @@
 # photometric-stereo
 Implementation of simple photometric stereo like below picture.
 
-
+<center>
 <img src="./figure/figure1.png" width=90%>
-
+<\center>
 ## Environment
 Ubuntu 18.04  
 Python3.6(Anaconda3-5.2.0)
