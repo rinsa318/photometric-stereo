@@ -4,8 +4,8 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-26 17:58:39
-  @Last Modified by:   rinsa318
-  @Last Modified time: 2019-03-27 14:17:26
+  @Last Modified by:   Tsukasa Nozawa
+  @Last Modified time: 2019-03-27 18:06:26
  ----------------------------------------------------
 
   Usage:
@@ -181,7 +181,7 @@ def main():
 
 
   ### save result as image
-  results = np.hstack((np.hstack((albedo_image, normal_image)), depth_image_rgb))
+  results = np.hstack((albedo_image, normal_image, depth_image_rgb))
   cv2.imwrite(merage_result, np.array(results, dtype=np.uint8))
   # cv2.imshow("results", np.array(results, dtype=np.uint8))
   # cv2.waitKey(0)
