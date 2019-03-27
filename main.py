@@ -4,15 +4,20 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-26 17:58:39
-  @Last Modified by:   Tsukasa Nozawa
-  @Last Modified time: 2019-03-27 13:44:35
+  @Last Modified by:   rinsa318
+  @Last Modified time: 2019-03-27 14:17:26
  ----------------------------------------------------
 
   Usage:
-   python main.py argvs[1] argvs[2] argvs[3]...
+   python main.py argvs[1] argvs[2] argvs[3]
   
-   argvs[1]  :  image folder path   -->   {abc}/{abc}.{number}.png, {abc}/{abc}.mask.png
-   argvs[2]  :  chrome folder path   -->  argvs[1] and argvs[2] have to taken same lighting condition
+   argvs[1]  :  path to image folder
+    --> Ex) ~/{name}/
+        Then, {name} folder should include 
+        • {name}/{name}.{0 ~ number}.png
+        • {name}/{name}.mask.png
+   argvs[2]  :  path to chrome folder
+    -->  same with argvs[1]
    argvs[3]  :  number of image
  
   Options:
@@ -51,9 +56,9 @@ def load_data(SUBJECT, Ni):
     ps.progress_bar(i, N-1)
     s = SUBJECT[i]
     dirname = os.path.basename(os.path.dirname(s))
-    bgr[dirname] = np.array([cv2.imread(s+'{0}.{1:d}.png'.format(dirname, x)) for x in range(Ni)])
-    gray[dirname] = np.array([cv2.imread(s+'{0}.{1:d}.png'.format(dirname, x), cv2.IMREAD_GRAYSCALE) for x in range(Ni)])
-    mask[dirname] = cv2.imread(s+'{0}.mask.png'.format(dirname), cv2.IMREAD_GRAYSCALE)
+    bgr[dirname] = np.array([cv2.imread(os.path.join(s+'{0}.{1:d}.png'.format(dirname, x))) for x in range(Ni)])
+    gray[dirname] = np.array([cv2.imread(os.path.join(s+'{0}.{1:d}.png'.format(dirname, x)), cv2.IMREAD_GRAYSCALE) for x in range(Ni)])
+    mask[dirname] = cv2.imread(os.path.join(s+'{0}.mask.png'.format(dirname)), cv2.IMREAD_GRAYSCALE)
 
 
   return bgr, gray, mask
