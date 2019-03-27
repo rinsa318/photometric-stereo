@@ -4,8 +4,8 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-28 04:12:17
-  @Last Modified by:   rinsa318
-  @Last Modified time: 2019-03-13 20:13:35
+  @Last Modified by:   Tsukasa Nozawa
+  @Last Modified time: 2019-03-27 13:44:02
  ----------------------------------------------------
 
 
@@ -115,6 +115,8 @@ def comp_normal(grays, mask, lights):
   
   ## 4. create normal map
   for i in range(n_tilde_t.shape[0]):
+
+    progress_bar(i, n_tilde_t.shape[0] - 1)
     
     ## albedo for gray image 
     rho = np.linalg.norm(n_tilde_t[i])
@@ -158,6 +160,8 @@ def comp_albedo(bgrs, mask, lights, normal):
 
   ## 2. calculate each posiiton's albedo
   for i in range(bgrs.shape[1]):
+    progress_bar(i, bgrs.shape[1] - 1)
+
     for j in range(bgrs.shape[2]):
 
       ## current position
@@ -214,6 +218,7 @@ def comp_depth(mask, normal):
 
 
   ## 1. prepare matrix for least square
+  print("prepare matrix for least square: Ax = b")
   A = sp.lil_matrix((mask.size * 2, mask.size))
   b = np.zeros(A.shape[0], dtype=np.float32)
 
@@ -237,6 +242,8 @@ def comp_depth(mask, normal):
   w = mask.shape[1]
   h = mask.shape[0]
   for i in range(mask.shape[0]):
+    progress_bar(i, mask.shape[0] -1)
+
     for j in range(mask.shape[1]):
 
       ## current pixel om matrix
@@ -256,6 +263,7 @@ def comp_depth(mask, normal):
 
 
   ## 5. solve Ax = b
+  print("\nsoloving Ax = b ...")
   AtA = A.transpose().dot(A)
   Atb = A.transpose().dot(b)
   x, info = sp.linalg.cg(AtA, Atb)
@@ -305,6 +313,7 @@ def comp_depth_4edge(mask, normal):
 
 
   ## 1. prepare matrix for least square
+  print("prepare matrix for least square: Ax = b")
   A = sp.lil_matrix((mask.size * 4, mask.size))
   b = np.zeros(A.shape[0], dtype=np.float32)
 
@@ -329,6 +338,8 @@ def comp_depth_4edge(mask, normal):
   w = mask.shape[1]
   h = mask.shape[0]
   for i in range(mask.shape[0]):
+    progress_bar(i, mask.shape[0] -1)
+
     for j in range(mask.shape[1]):
 
       ## current pixel om matrix
@@ -358,6 +369,7 @@ def comp_depth_4edge(mask, normal):
 
 
   ## 5. solve Ax = b
+  print("\nsoloving Ax = b ...")
   AtA = A.transpose().dot(A)
   Atb = A.transpose().dot(b)
   x, info = sp.linalg.cg(AtA, Atb)
@@ -369,3 +381,20 @@ def comp_depth_4edge(mask, normal):
   depth[mask == 0] = 0.0
 
   return depth
+
+
+
+def progress_bar(n, N):
+
+  '''
+  print current progress
+  '''
+
+  step = 2
+  percent = float(n) / float(N) * 100
+
+  ## convert percent to bar
+  current = "#" * int(percent//step)
+  remain = " " * int(100/step-int(percent//step))
+  bar = "|{}{}|".format(current, remain)
+  print("\r{}:{:3.0f}[%]".format(bar, percent), end="", flush=True)

@@ -4,8 +4,8 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-26 17:58:39
-  @Last Modified by:   rinsa318
-  @Last Modified time: 2019-03-13 20:27:47
+  @Last Modified by:   Tsukasa Nozawa
+  @Last Modified time: 2019-03-27 13:44:35
  ----------------------------------------------------
 
   Usage:
@@ -22,11 +22,14 @@
 
 """
 
+print(__doc__)
+
 
 import numpy as np
 import cv2
 import sys
 import os
+import time
 
 ### my functions
 import pms as ps
@@ -38,17 +41,19 @@ import obj_functions as ob
 def load_data(SUBJECT, Ni):
 
 
-  print(SUBJECT)
-
   bgr = {}
   gray = {}
   mask = {}
+  N = len(SUBJECT)
 
-  for s in SUBJECT:
+  for i in range(N):
+
+    ps.progress_bar(i, N-1)
+    s = SUBJECT[i]
     dirname = os.path.basename(os.path.dirname(s))
-    bgr[dirname] = np.array([cv2.imread(s+'/{0}.{1:d}.png'.format(dirname, x)) for x in range(Ni)])
-    gray[dirname] = np.array([cv2.imread(s+'/{0}.{1:d}.png'.format(dirname, x), cv2.IMREAD_GRAYSCALE) for x in range(Ni)])
-    mask[dirname] = cv2.imread(s+'/{0}.mask.png'.format(dirname), cv2.IMREAD_GRAYSCALE)
+    bgr[dirname] = np.array([cv2.imread(s+'{0}.{1:d}.png'.format(dirname, x)) for x in range(Ni)])
+    gray[dirname] = np.array([cv2.imread(s+'{0}.{1:d}.png'.format(dirname, x), cv2.IMREAD_GRAYSCALE) for x in range(Ni)])
+    mask[dirname] = cv2.imread(s+'{0}.mask.png'.format(dirname), cv2.IMREAD_GRAYSCALE)
 
 
   return bgr, gray, mask
@@ -86,6 +91,7 @@ def main():
   chrome_path = argvs[2]
   outpath = input_path
   Ni = int(argvs[3])
+  start = time.time()
 
 
   ## prepare data set for estimation
@@ -97,10 +103,12 @@ def main():
 
 
   ## load all image
+  print("Step1: load images from {0}".format(SUBJECT_path))
   bgr, gray, mask = load_data(SUBJECT_path, Ni)
   small_mask = mask2tiny(mask[SUBJECT_list[0]], 3)
-  cv2.imwrite("{0}/{1}_tiny_mask.png".format(outpath, SUBJECT_list[0]), small_mask)
-
+  tiny_mask_path = os.path.join(outpath, SUBJECT_list[0]+"_tiny_mask.png")
+  cv2.imwrite(tiny_mask_path, small_mask)
+  print("\n")
 
 
   ########################
@@ -108,9 +116,12 @@ def main():
   ########################
   ## estimate light direction from chrome image
   lights = np.zeros((Ni, 3))
+  print("Step2: Estimate light direction from chrome image")
   for i in range(Ni):
+    ps.progress_bar(i, Ni-1)
     lights[i, :] = ps.comp_light(gray[SUBJECT_list[1]][i], mask[SUBJECT_list[1]])
-    print("Estimated light source No.{0} --> {1}".format(i, lights[i, :]))
+  
+  print("\n<result>\n -->\n {0}\n".format(lights))
 
 
 
@@ -118,10 +129,12 @@ def main():
   ########################
   ## 3. compute normal
   ########################
+  print("Step3: Estimate normal")
   normal=ps.comp_normal(gray[SUBJECT_list[0]], small_mask, lights)
   normal_map = normal[:, :, ::-1]
-  cv2.imwrite("{0}/{1}_normal.png".format(outpath, SUBJECT_list[0]), (normal_map+1.0)/2.0*255)
-
+  normalmap_path = os.path.join(outpath, SUBJECT_list[0]+"_normal.png")
+  cv2.imwrite(normalmap_path, (normal_map+1.0)/2.0*255)
+  print("\n")
 
 
 
@@ -129,24 +142,33 @@ def main():
   ########################
   ## 4. comp_albedo
   ########################
+  print("Step4: Estimate albedo")
   albedo = ps.comp_albedo(bgr[SUBJECT_list[0]], small_mask, lights, normal)
-  cv2.imwrite("{0}/{1}_albedo.png".format(outpath, SUBJECT_list[0]), albedo*255) 
-
+  albedo_path = os.path.join(outpath, SUBJECT_list[0]+"_albedo.png")
+  cv2.imwrite(albedo_path, albedo*255) 
+  print("\n")
 
 
 
   ########################
   ## 5. comp_depth
   ########################
+  print("Step5: Estimate depth from normal")
   depth = ps.comp_depth_4edge(small_mask, normal)
-  cv2.imwrite("{0}/{1}_depth.png".format(outpath, SUBJECT_list[0]), (1.0 - (depth / np.max(depth))) * 255)
-
+  depth_path = os.path.join(outpath, SUBJECT_list[0]+"_depth.png")
+  cv2.imwrite(depth_path, (1.0 - (depth / np.max(depth))) * 255)
+  print("done!!\n")
+  end = time.time()
 
 
 
   ########################
   ## 6. save output
   ########################
+  merage_result = os.path.join(outpath, SUBJECT_list[0]+"_results_merage.png")
+  ply_result = os.path.join(outpath, SUBJECT_list[0]+"_recovered.ply")
+  obj_result = os.path.join(outpath, SUBJECT_list[0]+"_recovered.obj")
+  print("Step6: save result as\n --> \n{0}\n{1}\n{2}".format(merage_result, ply_result, obj_result))
   normal_image = np.array((normal_map+1.0)/2.0*255, dtype=np.uint8)
   albedo_image = np.array(albedo*255, dtype=np.uint8)
   depth_image = np.array((1.0 - (depth / np.max(depth))) * 255, dtype=np.uint8 )
@@ -155,16 +177,17 @@ def main():
 
   ### save result as image
   results = np.hstack((np.hstack((albedo_image, normal_image)), depth_image_rgb))
-  cv2.imwrite("{0}/{1}_results_merage.png".format(outpath, SUBJECT_list[0]), np.array(results, dtype=np.uint8))
-  cv2.imshow("results", np.array(results, dtype=np.uint8))
-  cv2.waitKey(0)
+  cv2.imwrite(merage_result, np.array(results, dtype=np.uint8))
+  # cv2.imshow("results", np.array(results, dtype=np.uint8))
+  # cv2.waitKey(0)
 
 
   ### save result as 3d file
   vertex, triangle = ob.Depth2VerTri(depth, small_mask)
-  ob.save_as_ply("{0}/{1}_recovered.ply".format(outpath, SUBJECT_list[0]), depth, normal, albedo, small_mask, triangle)
-  ob.writeobj("{0}/{1}_recovered.obj".format(outpath, SUBJECT_list[0]), vertex, triangle)
-
+  ob.save_as_ply(ply_result, depth, normal, albedo, small_mask, triangle)
+  ob.writeobj(obj_result, vertex, triangle)
+  print("done!!\n")
+  print("calculation time: {0}[sec]".format(round(end - start, 2)))
 
 
 
