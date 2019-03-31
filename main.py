@@ -4,13 +4,8 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-26 17:58:39
-<<<<<<< .merge_file_K46n2H
   @Last Modified by:   rinsa318
-  @Last Modified time: 2019-03-29 19:14:05
-=======
-  @Last Modified by:   Tsukasa Nozawa
-  @Last Modified time: 2019-03-27 18:06:26
->>>>>>> .merge_file_yBDLv5
+  @Last Modified time: 2019-03-31 19:22:00
  ----------------------------------------------------
 
   Usage:
@@ -186,13 +181,9 @@ def main():
 
 
   ### save result as image
-<<<<<<< .merge_file_K46n2H
   normal_image[small_mask == 0] = [255, 255, 255]
   albedo_image[small_mask == 0] = [255, 255, 255]
-  results = np.hstack((np.hstack((albedo_image, normal_image)), depth_image_rgb))
-=======
   results = np.hstack((albedo_image, normal_image, depth_image_rgb))
->>>>>>> .merge_file_yBDLv5
   cv2.imwrite(merage_result, np.array(results, dtype=np.uint8))
   # cv2.imshow("results", np.array(results, dtype=np.uint8))
   # cv2.waitKey(0)
