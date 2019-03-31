@@ -5,7 +5,7 @@
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-26 17:58:39
   @Last Modified by:   rinsa318
-  @Last Modified time: 2019-03-27 14:17:26
+  @Last Modified time: 2019-03-29 19:14:05
  ----------------------------------------------------
 
   Usage:
@@ -181,6 +181,8 @@ def main():
 
 
   ### save result as image
+  normal_image[small_mask == 0] = [255, 255, 255]
+  albedo_image[small_mask == 0] = [255, 255, 255]
   results = np.hstack((np.hstack((albedo_image, normal_image)), depth_image_rgb))
   cv2.imwrite(merage_result, np.array(results, dtype=np.uint8))
   # cv2.imshow("results", np.array(results, dtype=np.uint8))
