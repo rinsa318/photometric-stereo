@@ -2,7 +2,7 @@
 Implementation of simple photometric stereo like below picture.
 
 <p align="center">
-  <img src="./figure/figure1.png" width=90%>
+  <img src="./figure/figure1.png" width=100%>
 </p>
 
 ## Environment

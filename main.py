@@ -5,7 +5,7 @@
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-26 17:58:39
   @Last Modified by:   rinsa318
-  @Last Modified time: 2019-03-31 19:22:00
+  @Last Modified time: 2019-03-31 19:26:24
  ----------------------------------------------------
 
   Usage:
@@ -137,6 +137,7 @@ def main():
   print("Step3: Estimate normal")
   normal=ps.comp_normal(gray[SUBJECT_list[0]], small_mask, lights)
   normal_map = normal[:, :, ::-1]
+  normal_map[small_mask == 0] = [1.0, 1.0, 1.0]
   normalmap_path = os.path.join(outpath, SUBJECT_list[0]+"_normal.png")
   cv2.imwrite(normalmap_path, (normal_map+1.0)/2.0*255)
   print("\n")
@@ -149,6 +150,7 @@ def main():
   ########################
   print("Step4: Estimate albedo")
   albedo = ps.comp_albedo(bgr[SUBJECT_list[0]], small_mask, lights, normal)
+  albedo[small_mask == 0] = [1.0, 1.0, 1.0]
   albedo_path = os.path.join(outpath, SUBJECT_list[0]+"_albedo.png")
   cv2.imwrite(albedo_path, albedo*255) 
   print("\n")
@@ -181,8 +183,6 @@ def main():
 
 
   ### save result as image
-  normal_image[small_mask == 0] = [255, 255, 255]
-  albedo_image[small_mask == 0] = [255, 255, 255]
   results = np.hstack((albedo_image, normal_image, depth_image_rgb))
   cv2.imwrite(merage_result, np.array(results, dtype=np.uint8))
   # cv2.imshow("results", np.array(results, dtype=np.uint8))
