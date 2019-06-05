@@ -1,9 +1,9 @@
 # photometric-stereo
 Implementation of simple photometric stereo like below picture.
 
-<p align="center">
+<div align="center">
   <img src="./figure/figure1.png" width=100%>
-</p>
+</div>
 
 ## Environment
 Ubuntu 18.04  
