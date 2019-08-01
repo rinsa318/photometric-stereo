@@ -4,8 +4,8 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-28 04:12:17
-  @Last Modified by:   rinsa318
-  @Last Modified time: 2019-04-09 11:01:11
+  @Last Modified by:   Tsukasa Nozawa
+  @Last Modified time: 2019-08-01 17:02:47
  ----------------------------------------------------
 
 
@@ -42,7 +42,7 @@ def comp_light(img, mask):
 
   ## 2. Find the center and radius of the sphere from the mask
   ret, thresh = cv2.threshold(mask, 127, 255, 0)
-  image, contours, hierarchy = cv2.findContours(thresh, 1, 2)
+  contours, hierarchy = cv2.findContours(thresh, 1, 2)
   cnt = contours[0]
   (cx, cy), cr = cv2.minEnclosingCircle(cnt)
   # C[0] = cx
@@ -55,7 +55,7 @@ def comp_light(img, mask):
   ## 3. Compute a weighted average of the brightest pixel locations.
   img[mask < 0.9*255] = 0
   ret, thresh = cv2.threshold(img, 250, 255, 0)
-  image, contours, hierarchy = cv2.findContours(thresh, 1, 2)
+  contours, hierarchy = cv2.findContours(thresh, 1, 2)
   cnt = contours[0]
   M = cv2.moments(cnt)
   hx = M['m10']/M['m00']
