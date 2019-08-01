@@ -7,13 +7,13 @@ Implementation of simple photometric stereo like below picture.
 
 ## Environment
 Ubuntu 18.04  
-Python3.6(Anaconda3-5.2.0)
+Python3.6
 
 
 
 ## Dependency
 
-+ OpenCV3
++ OpenCV4
 + numpy
 + sys
 + os
