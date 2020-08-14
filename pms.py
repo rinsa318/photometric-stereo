@@ -4,8 +4,6 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-28 04:12:17
-  @Last Modified by:   Tsukasa Nozawa
-  @Last Modified time: 2019-08-01 17:02:47
  ----------------------------------------------------
 
 
@@ -211,9 +209,6 @@ def comp_depth(mask, normal):
 
   A*x = b
 
-
-  (--> might be left bottom as well???)
-
   '''
 
 
@@ -298,7 +293,13 @@ def comp_depth_4edge(mask, normal):
   Also dot(Np, v2) is same #up
   --> Z(x,y+1) - Z(x, y) = -ny/nz = q
 
+  Also dot(Np, v3) is same #left
+  --> Z(x-1,y) - Z(x, y) = -nx/nz = q
+
+  Also dot(Np, v4) is same #bottom
+  --> Z(x,y-1) - Z(x, y) = -ny/nz = q
   
+
   Finally, apply least square to find Z(x, y).
   A: round matrix
   x: matrix of Z(x, y)
@@ -307,7 +308,6 @@ def comp_depth_4edge(mask, normal):
   A*x = b
 
 
-  (--> might be left bottom as well???)
 
   '''
 

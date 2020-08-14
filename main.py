@@ -4,26 +4,7 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-26 17:58:39
-  @Last Modified by:   rinsa318
-  @Last Modified time: 2019-03-31 19:26:24
  ----------------------------------------------------
-
-  Usage:
-   python main.py argvs[1] argvs[2] argvs[3]
-  
-   argvs[1]  :  path to image folder
-    --> Ex) ~/{name}/
-        Then, {name} folder should include 
-        • {name}/{name}.{0 ~ number}.png
-        • {name}/{name}.mask.png
-   argvs[2]  :  path to chrome folder
-    -->  same with argvs[1]
-   argvs[3]  :  number of image
- 
-  Options:
-   windowsize: see mask2tiny function
-
-
 
 """
 
@@ -39,6 +20,7 @@ import time
 ### my functions
 import pms as ps
 import obj_functions as ob
+import argparse
 
 
 
@@ -50,15 +32,17 @@ def load_data(SUBJECT, Ni):
   gray = {}
   mask = {}
   N = len(SUBJECT)
+  print(SUBJECT)
 
   for i in range(N):
 
-    ps.progress_bar(i, N-1)
+    # ps.progress_bar(i, N-1)
     s = SUBJECT[i]
     dirname = os.path.basename(os.path.dirname(s))
-    bgr[dirname] = np.array([cv2.imread(os.path.join(s+'{0}.{1:d}.png'.format(dirname, x))) for x in range(Ni)])
-    gray[dirname] = np.array([cv2.imread(os.path.join(s+'{0}.{1:d}.png'.format(dirname, x)), cv2.IMREAD_GRAYSCALE) for x in range(Ni)])
-    mask[dirname] = cv2.imread(os.path.join(s+'{0}.mask.png'.format(dirname)), cv2.IMREAD_GRAYSCALE)
+    print(dirname)
+    bgr[dirname] = np.array([cv2.imread(os.path.join(s,'{0}.{1:d}.png'.format(dirname, x))) for x in range(Ni)])
+    gray[dirname] = np.array([cv2.imread(os.path.join(s,'{0}.{1:d}.png'.format(dirname, x)), cv2.IMREAD_GRAYSCALE) for x in range(Ni)])
+    mask[dirname] = cv2.imread(os.path.join(s,'{0}.mask.png'.format(dirname)), cv2.IMREAD_GRAYSCALE)
 
 
   return bgr, gray, mask
@@ -84,6 +68,50 @@ def mask2tiny(mask, window):
 
 
 
+def parse_arguments():
+
+  #### ----- set arguments
+  parser = argparse.ArgumentParser(description="photometric stereo")
+  parser.add_argument("-i",
+                      "--input",
+                      type=str,
+                      default="./example/rock/",
+                      metavar='',
+                      help='path to input images folder\n --> {abc}/{abc}.{number}.png, {abc}/{abc}.mask.png')
+  parser.add_argument("-c",
+                      "--chrome",
+                      type=str,
+                      default="./example/chrome/",
+                      metavar='',
+                      help='path to chrome images folder\n --> same lighting condition with input images')
+  parser.add_argument("-n",
+                      "--numimage",
+                      type=int,
+                      default=9,
+                      metavar='',
+                      help="number of images for estimation")
+  parser.add_argument("-w",
+                      "--window",
+                      type=int,
+                      default=3,
+                      metavar='',
+                      help="window size to make mask small")
+  args = parser.parse_args()
+  args.outdir = os.path.dirname(args.input)
+
+
+  #### ----- print arguments
+  text  = "\n<input arguments>\n"
+  for key in vars(args):
+    text += "{}: {}\n".format(key.ljust(15), str(getattr(args, key)).ljust(30))
+  print(text)
+
+  return args
+
+
+
+
+
 
 
 
@@ -91,26 +119,24 @@ def main():
   ########################
   ## 1. set config
   ########################
-  argvs = sys.argv
-  input_path = argvs[1]
-  chrome_path = argvs[2]
-  outpath = input_path
-  Ni = int(argvs[3])
+  args = parse_arguments()
+  outpath = args.input
+  # args.numimage = int(argvs[3])
   start = time.time()
 
 
   ## prepare data set for estimation
   ## chrome is nessesarry to estimate light direction
-  input_dirname = os.path.basename(os.path.dirname(input_path))
-  chrome_dirname = os.path.basename(os.path.dirname(chrome_path))
-  SUBJECT_path = [input_path, chrome_path]
+  input_dirname = os.path.basename(os.path.dirname(args.input))
+  chrome_dirname = os.path.basename(os.path.dirname(args.chrome))
+  SUBJECT_path = [args.input, args.chrome]
   SUBJECT_list = [input_dirname, chrome_dirname]
 
 
   ## load all image
   print("Step1: load images from {0}".format(SUBJECT_path))
-  bgr, gray, mask = load_data(SUBJECT_path, Ni)
-  small_mask = mask2tiny(mask[SUBJECT_list[0]], 3)
+  bgr, gray, mask = load_data(SUBJECT_path, args.numimage)
+  small_mask = mask2tiny(mask[SUBJECT_list[0]], args.window)
   tiny_mask_path = os.path.join(outpath, SUBJECT_list[0]+"_tiny_mask.png")
   cv2.imwrite(tiny_mask_path, small_mask)
   print("\n")
@@ -120,10 +146,10 @@ def main():
   ## 2. compute light
   ########################
   ## estimate light direction from chrome image
-  lights = np.zeros((Ni, 3))
+  lights = np.zeros((args.numimage, 3))
   print("Step2: Estimate light direction from chrome image")
-  for i in range(Ni):
-    ps.progress_bar(i, Ni-1)
+  for i in range(args.numimage):
+    ps.progress_bar(i, args.numimage-1)
     lights[i, :] = ps.comp_light(gray[SUBJECT_list[1]][i], mask[SUBJECT_list[1]])
   
   print("\n<result>\n -->\n {0}\n".format(lights))

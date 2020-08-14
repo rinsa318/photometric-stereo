@@ -4,8 +4,6 @@
   @Affiliation: Waseda University
   @Email: rinsa@suou.waseda.jp
   @Date: 2019-02-28 02:09:19
-  @Last Modified by:   Tsukasa Nozawa
-  @Last Modified time: 2019-02-28 05:14:28
  ----------------------------------------------------
 
 
@@ -138,7 +136,7 @@ def Depth2VerTri(depth, mask):
       index += 1
 
 
-      vertex.append( [j, -i, depth[i, j]] )
+      vertex.append( [i, j, depth[i, j]] )
 
   ## 2. create flags for triangle
   mask_bool = np.array(mask, dtype = 'bool')
@@ -174,10 +172,10 @@ def Depth2VerTri(depth, mask):
   flag1 means: Δ{ (i, j), (i+1, j), (i, j+1) }
 
   otherwise:
-    case1: is not locate on edge(i, j ==0) and exist left up point
+    case1: not on edge(i, j ==0) and exist left up point
     --> Δ{ (i, j), (i-1, j-1), (i, j-1) }
     
-    case2: is not locate on edge(i, j ==shape-1) and exist right down
+    case2: not on edge(i, j ==shape-1) and exist right down
     --> Δ{ (i, j), (i+1, j+1), (i, j+1) }
     
   '''
@@ -354,6 +352,7 @@ def save_as_ply(filename, depth, normal, albedo, mask, triangle):
   mask_bool = np.array(mask, dtype = 'bool')
   Np = np.count_nonzero(mask)
   bgr = np.array(albedo * 255, dtype=np.uint8)
+  # bgr = np.array(albedo, dtype=np.uint8)
 
 
 
@@ -385,7 +384,7 @@ def save_as_ply(filename, depth, normal, albedo, mask, triangle):
         if(not(mask_bool[i, j])):
             continue
 
-        fp.write('{0:e} {1:e} {2:e} {3:e} {4:e} {5:e} {6:d} {7:d} {8:d}\n'.format(j, -i, depth[i, j], -normal[i, j, 0], normal[i, j, 1], normal[i, j, 2], bgr[i, j, 0], bgr[i, j, 1], bgr[i, j, 2]))
+        fp.write('{0:e} {1:e} {2:e} {3:e} {4:e} {5:e} {6:d} {7:d} {8:d}\n'.format(i, j, depth[i, j], normal[i, j, 0], normal[i, j, 1], normal[i, j, 2], bgr[i, j, 0], bgr[i, j, 1], bgr[i, j, 2]))
     
     for i in range(len(triangle)):
       fp.write('3 {0:d} {1:d} {2:d}\n'.format(triangle[i][0], triangle[i][1], triangle[i][2]))

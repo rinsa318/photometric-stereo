@@ -18,7 +18,7 @@ Python3.6
 + sys
 + os
 + scipy
-
++ argparse
 
 
 
@@ -39,20 +39,17 @@ Note that the images used in the example program are taken from the following pr
 ### How to run
 
 ```
-python main.py argvs[1] argvs[2] argvs[3]
+python main.py
 
 
-
-argvs[1]  :  path to input folder   
--->  {abc}/{abc}.{number}.png, {abc}/{abc}.mask.png
-
-argvs[2]  :  path to chrome folder   
--->  argvs[1] and argvs[2] have to taken same lighting condition
-
-argvs[3]  :  number of image
-
-Options:
-windowsize: see mask2tiny function
+optional arguments:
+  -h, --help        show this help message and exit
+  -i , --input      path to input images folder --> {abc}/{abc}.{number}.png,
+                    {abc}/{abc}.mask.png
+  -c , --chrome     path to chrome images folder --> same lighting condition with input
+                    images
+  -n , --numimage   number of images for estimation
+  -w , --window     window size to make mask small
 
 ```
 
