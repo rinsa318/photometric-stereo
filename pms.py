@@ -186,9 +186,9 @@ def comp_albedo(bgrs, mask, lights, normal):
 def comp_depth(mask, normal):
 
   '''
-  "arbitrary point p(x, y, Z(x, y)) and Np = (nx, ny, nz)"
+  "arbitrary point P(x, y, Z(x, y)) and Np = (nx, ny, nz)"
 
-  v1 = (x+1, y, Z(x+1, y)) - p
+  v1 = (x+1, y, Z(x+1, y)) - P
      = (1, 0, Z(x+1, y) - Z(x, y))
 
   Then, dot(Np, v1) == 0 #right
@@ -278,9 +278,9 @@ def comp_depth(mask, normal):
 def comp_depth_4edge(mask, normal):
 
   '''
-  "arbitrary point p(x, y, Z(x, y)) and Np = (nx, ny, nz)"
+  "arbitrary point P(x, y, Z(x, y)) and Np = (nx, ny, nz)"
 
-  v1 = (x+1, y, Z(x+1, y)) - p
+  v1 = (x+1, y, Z(x+1, y)) - P
      = (1, 0, Z(x+1, y) - Z(x, y))
 
   Then, dot(Np, v1) == 0 #right
